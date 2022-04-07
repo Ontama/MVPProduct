@@ -14,12 +14,12 @@ final class MainTabBarController: UITabBarController {
     }
 
     func setupTab() {
-        let contentViewController = ContentViewController()
-        contentViewController.tabBarItem = UITabBarItem(title: "Featured", image: UIImage(systemName: "star.fill"), tag: 0)
+        // fixme: そのうち対応する
+        let firstViewController = ContentViewController()
+        firstViewController.tabBarItem = UITabBarItem(title: "Featured", image: UIImage(systemName: "star.fill"), tag: 0)
 
-        let secondViewController = ContentViewController()
-        
-        secondViewController.tabBarItem = UITabBarItem(title: "Landmarks", image: UIImage(systemName: "list.bullet"), tag: 1)
+        let contentViewController = ContentViewController()
+        contentViewController.tabBarItem = UITabBarItem(title: "Landmarks", image: UIImage(systemName: "list.bullet"), tag: 1)
 
         viewControllers = [contentViewController, secondViewController]
     }
