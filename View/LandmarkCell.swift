@@ -11,15 +11,22 @@ final class LandmarkCell: UITableViewCell {
     private let landmarkImage: UIImage
     private let landmarkName: String
     private let starImageView: UIImageView
-    private let starImageWidth = CGFloat(50)
+    private let starImageWidth = CGFloat(20)
+    private let starImageHeight = CGFloat(20)
     
-    init(image: UIImage, name: String){
-        landmarkImage = image
-        landmarkName = name
+    init(landmark: Landmark){
+        landmarkImage = landmark.image
+        landmarkName = landmark.name
+        
         let starImage = UIImage(systemName: "star.fill")
         starImageView = UIImageView(image: starImage)
-    
+        starImageView.tintColor = .yellow
+        starImageView.isHidden = !landmark.isFavorite
+        
         super.init(style: .default, reuseIdentifier: nil)
+        addSubview(starImageView)
+        accessoryType = .none
+        selectionStyle = .default
     }
     
     required init?(coder: NSCoder) {
@@ -30,7 +37,10 @@ final class LandmarkCell: UITableViewCell {
         imageView?.image = landmarkImage
         accessoryType = .none
         textLabel?.text = landmarkName
-        starImageView.frame = CGRect(x: 0, y: 0, width: frame.width - starImageWidth, height: 50)
+        starImageView.frame = CGRect(x: frame.width - starImageWidth - 10,
+                                     y: frame.height / 2 - starImageHeight / 2,
+                                     width: starImageWidth,
+                                     height: starImageHeight)
         super.layoutSubviews()
     }
 }
