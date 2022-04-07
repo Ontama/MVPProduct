@@ -9,29 +9,36 @@ import UIKit
 
 final class ContentViewController: UIViewController {
     private let tableView = UITableView()
-    private let modelData = ModelData()
-    private var showFavoritesOnly = false
-    
-    private var filteredLandmarks: [Landmark] {
-        modelData.landmarks.filter({ landmark in
-            (!showFavoritesOnly || landmark.isFavorite)
-        })
-    }
-
-    enum AdditionalCell: String, CaseIterable, Codable {
-        case favorite = "Favorites only"
-    }
+    private var presenter: ContentViewPresenter!
     
     override func viewDidLoad() {
+        super.viewDidLoad()
+        
         tableView.delegate = self
         tableView.dataSource = self
         view.addSubview(tableView)
-        super.viewDidLoad()
+        
+        presenter = ContentViewPresenter(self)
+        presenter.viewDidLoad()
     }
     
     override func viewWillLayoutSubviews() {
         tableView.frame.size = UIScreen.main.bounds.size
         super.viewWillLayoutSubviews()
+    }
+}
+
+extension ContentViewController: ContentViewPresenterOutput {
+    func didFetch(_ Landmark: [Landmark]) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.tableView.reloadData()
+        }
+    }
+    
+    func didPushViewController(of landmark: Landmark) {
+        // TODO: 詳細画面へ遷移
+        print("詳細画面へ遷移")
     }
 }
 
@@ -43,11 +50,11 @@ extension ContentViewController: UITableViewDelegate {
 
 extension ContentViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return AdditionalCell.allCases.count + filteredLandmarks.count
+        return presenter.numberOfRowsInSection
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return presenter.numberOfSections
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -55,18 +62,14 @@ extension ContentViewController: UITableViewDataSource {
             return UITableViewCell()
         }
         
-        if indexPath.row < AdditionalCell.allCases.count {
-            let cell = FavoriteOnlyCell(showFavoritesOnly: showFavoritesOnly)
+        if let additionalCell = presenter.additionalCell(forRow: indexPath.row) {
+            let cell = FavoriteOnlyCell(showFavoritesOnly: presenter.showFavoritesOnly)
             cell.delegate = self
-            cell.textLabel?.text = AdditionalCell.allCases[indexPath.row].rawValue
+            cell.textLabel?.text = additionalCell.rawValue
             return cell
         }
         
-        guard indexPath.row < filteredLandmarks.count + AdditionalCell.allCases.count else {
-            return UITableViewCell()
-        }
-        
-        let landmark = filteredLandmarks[indexPath.row - AdditionalCell.allCases.count]
+        guard let landmark = presenter.landmark(forRow: indexPath.row) else { return UITableViewCell() }
         let cell = LandmarkCell(landmark: landmark)
         return cell
     }
@@ -78,7 +81,7 @@ extension ContentViewController: UITableViewDataSource {
 
 extension ContentViewController: FavoriteOnlyCellDelegate {
     func favoriteOnlyCellSwitch(toggle: UISwitch) {
-        showFavoritesOnly = toggle.isOn
+        presenter.showFavoritesOnly = toggle.isOn
         tableView.reloadData()
     }
 }

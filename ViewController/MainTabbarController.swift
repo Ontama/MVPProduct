@@ -21,6 +21,6 @@ final class MainTabBarController: UITabBarController {
         let contentViewController = ContentViewController()
         contentViewController.tabBarItem = UITabBarItem(title: "Landmarks", image: UIImage(systemName: "list.bullet"), tag: 1)
 
-        viewControllers = [contentViewController, secondViewController]
+        viewControllers = [firstViewController, contentViewController]
     }
 }
