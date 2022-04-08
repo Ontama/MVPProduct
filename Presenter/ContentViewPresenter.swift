@@ -29,7 +29,7 @@ class ContentViewPresenter: ContentViewPresenterInput {
     
     let numberOfSections = 1
     
-    enum AdditionalCell: String, CaseIterable, Codable {
+    enum Addition: String, CaseIterable, Codable {
         case favorite = "Favorites only"
     }
     
@@ -38,7 +38,7 @@ class ContentViewPresenter: ContentViewPresenterInput {
     }
     
     var numberOfRowsInSection: Int {
-        return AdditionalCell.allCases.count + filteredLandmarks.count
+        return Addition.allCases.count + filteredLandmarks.count
     }
     
     var filteredLandmarks: [Landmark] {
@@ -47,14 +47,14 @@ class ContentViewPresenter: ContentViewPresenterInput {
         })
     }
     
-    func additionalCell(forRow row: Int) -> AdditionalCell? {
-        guard row < AdditionalCell.allCases.count else { return nil }
-        return AdditionalCell.allCases[row]
+    func additionalCell(forRow row: Int) -> Addition? {
+        guard row < Addition.allCases.count else { return nil }
+        return Addition.allCases[row]
     }
     
     func landmark(forRow row: Int) -> Landmark? {
         // 一番上はAdditionalCellが付与されているのでその分は引く
-        let index = row - AdditionalCell.allCases.count
+        let index = row - Addition.allCases.count
         guard index < filteredLandmarks.count else { return nil }
         return filteredLandmarks[index]
     }
